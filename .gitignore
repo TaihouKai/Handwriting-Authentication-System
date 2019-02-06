@@ -1,0 +1,22 @@
+#   Ignore model restore session file
+*.ckpt
+*.data-*
+*.meta*
+*.index
+checkpoint
+
+#   Ignore Python Precompiled Files
+*.pyc
+
+
+#   Ignore tensorflow event output
+*.tfevents*
+
+#   Ignore gzip files
+*.gz
+
+#   Ignore numpy binary files
+*.npy
+
+#   Ignore data folder
+src/*data
