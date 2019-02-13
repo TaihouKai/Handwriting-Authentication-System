@@ -84,8 +84,7 @@ class LayerConfig(ConfigManager):
                                     'type': 'plain',
                                     'in_size':'int',
                                     'w_summary':'bool',
-                                    'version':'plain',
-                                    'load_pretrained':'bool'
+                                    'version':'plain'
                                 },
                         'TRAINING':
                                 {
@@ -97,12 +96,14 @@ class LayerLibrary(object):
 
     def __init__(self,
                 config=None,
+                load_pretrained=False,
                 pretrained_model=None,
                 training=True):
 
         config.bound(train_flag=training)
         self.config = config
         self.training = training
+        self.load_pretrained = load_pretrained
         self.check_config_type(config.type)
         self.__version__ = '2.5'
         self.lib_version = self.__version__

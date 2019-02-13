@@ -38,17 +38,16 @@ class EdgeBox():
         suppressed_edgearray = self.edge_gen.edgesNms(edgearray, orientationarray)
         return edgearray, orientationarray, suppressed_edgearray
     
-    def extract_bbox(self, edgearray, orientationarray):
+    def run(self, img):
         """ Return bounding boxes
         """
-        return self.bbox_gen.getBoundingBoxes(edgearray, orientationarray)
+        _, orientationarray, suppressed_edgearray = self.generate_edge(img)
+        return self.bbox_gen.getBoundingBoxes(suppressed_edgearray, orientationarray)
     
     def generate(self, img, factor=0.5):
         img = self.scale(img, factor=factor)
         img = img.astype(np.float32)
-        _, orientationarray, suppressed_edgearray = self.generate_edge(img)
-        print('hit')
-        return img, self.extract_bbox(suppressed_edgearray, orientationarray)
+        return img, self.run(img)
     
     def visualize(self, img, scale=0.5):
         rimg, bboxes = self.generate(img, factor=scale)

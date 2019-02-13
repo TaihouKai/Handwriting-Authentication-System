@@ -19,4 +19,4 @@ checkpoint
 *.npy
 
 #   Ignore data folder
-src/*data
+samples/*data

@@ -4,9 +4,6 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
-
 from . import Network
 from . import Regularizer
 
@@ -24,7 +21,6 @@ class AlexNetConfig(Network.NetworkConfig):
                 in_size
                 w_summary
                 version
-                load_pretrained
 
                 coco_mean_pixel
                 batch_size
@@ -73,18 +69,21 @@ class AlexNet(Network.Network):
         #   
         net= tf.expand_dims(self.img, -1)
         net = self.conv2D_bias_relu(net, 32, 5, 1, 'SAME', name='conv1',
-                                    regularizers=self.regularizers, use_loaded=self.config.load_pretrained, lock=False)
+                                    regularizers=self.regularizers, use_loaded=self.load_pretrained, lock=False)
         net = tf.layers.max_pooling2d(net, [2, 2], 2, name='pool1')
         net = self.conv2D_bias_relu(net, 32, 5, 1, 'SAME', name='conv2',
-                                    regularizers=self.regularizers, use_loaded=self.config.load_pretrained, lock=False)
+                                    regularizers=self.regularizers, use_loaded=self.load_pretrained, lock=False)
         net = tf.layers.max_pooling2d(net, [2, 2], 2, name='pool2')
         inputs = tf.layers.dropout(net, rate=self.config.drop_out_rate, training=self.training)
         net = self.conv2D_bias_relu(net, 256, 7, 1, 'VALID', name='fc1',
-                                    regularizers=self.regularizers, use_loaded=self.config.load_pretrained, lock=False)
+                                    regularizers=self.regularizers, use_loaded=self.load_pretrained, lock=False)
         flattened = tf.reshape(net, (self.config.batch_size, 256))
         net = self.fullyConnected(flattened, self.config.classes, drop_out=self.config.drop_out_rate, name='fc2',
-                                regularizers=self.regularizers, use_loaded=self.config.load_pretrained, lock=False)
+                                regularizers=self.regularizers, use_loaded=self.load_pretrained, lock=False)
         self.logit = tf.nn.softmax(net)
+        if not self.training:
+            self.pred_class = tf.argmax(self.logit, axis=1)
+            print("- Built pred class tensor!")
     
     def build_monitor(self):
         with tf.variable_scope("accuracy"):
@@ -107,6 +106,13 @@ class AlexNet(Network.Network):
         count_true = tf.cast(count_true, tf.float32)
         return tf.divide(tf.multiply(count_true, 100.0), tf.cast(tf.shape(labels)[0], tf.float32))
     
+
+    def predict(self, img):
+        
+        pred = self.sess.run(self.pred_class, feed_dict={img: img.astype(np.float32)/255.0})
+        return pred
+
+
     def train(self):
         _epoch_count = 0
         _iter_count = 0

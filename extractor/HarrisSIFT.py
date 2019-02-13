@@ -1,0 +1,51 @@
+# coding: utf-8
+import cv2
+import sys
+import time
+import numpy as np
+sys.path.append('..')
+
+import util.cord_convert
+import util.preprocessing
+
+class HarrisSIFT():
+    """ Using Harris to extract possible corner
+        And Using SIFT to encoding the feature
+    """
+    def __init__(self, ksize=2, block_size=3, k=0.15, blur=cv2.GaussianBlur):
+        self.ksize = ksize
+        self.block_size = block_size
+        self.k = k
+        self.blur = blur
+    
+    def run(self, img):
+        """ Input must be gray image
+        """
+        dst = cv2.cornerHarris(img, self.ksize, self.block_size , self.k)
+        ret, dst = cv2.threshold(dst,0.01*dst.max(),255,0)
+        return dst 
+    
+    def visualize(self, img, scale=0.3):
+        img = util.preprocessing.scale(img, factor=scale)
+        gray = util.preprocessing.binary(img, None, None, 0.7)
+        gray = np.float32(gray)
+        dst = self.run(gray)
+        #result is dilated for marking the corners, not important
+        dst = cv2.dilate(dst,None)
+
+        # Threshold for an optimal value, it may vary depending on the image.
+        img[dst>0.01*dst.max()]=[0,0,255]
+        return img, dst
+
+
+
+if __name__ == '__main__':
+    n = HarrisSIFT()
+    print('Loaded model')
+    t = time.time()
+    img, dst = n.visualize(cv2.imread('../samples/digit_data/lfr_a.png')[:,:,:3], scale=0.3)
+    print(time.time()-t)
+    cv2.imshow('img', img)
+    cv2.imshow('dst', dst.astype(np.uint8))
+    if cv2.waitKey(0) & 0xff == 27:
+        cv2.destroyAllWindows()
