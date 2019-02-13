@@ -8,6 +8,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 from . import Network
+from . import Regularizer
 
 
 """
@@ -50,6 +51,7 @@ class AlexNet(Network.Network):
         """ Init Network parameters
         """
         super(AlexNet, self).__init__(*args, **kwargs)
+        self.regularizers = [Regularizer.L2Regularizer(beta=0.001)]
 
     def build_ph(self):
         self.img = tf.placeholder(tf.float32, shape=[None, self.config.in_size, self.config.in_size])
@@ -57,7 +59,11 @@ class AlexNet(Network.Network):
 
     def build_train_op(self):
         cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.label * tf.log(self.logit), reduction_indices=[1]))
-        self.loss = cross_entropy
+        with tf.variable_scope("Regularization"):
+            self.norm = []
+            for regularizer in self.regularizers:
+                self.norm.append(regularizer())
+        self.loss = cross_entropy + tf.reduce_sum(self.norm) * 0.01
         self.train_step.append(tf.train.GradientDescentOptimizer(self.config.base_lr).minimize(cross_entropy))
         with tf.variable_scope("summaries"):
             self.summ_scalar_list.append(
@@ -69,12 +75,13 @@ class AlexNet(Network.Network):
         net = self.conv2D_bias_relu(net, 32, 5, 1, 'SAME', name='conv1',
                                     regularizers=self.regularizers, use_loaded=self.config.load_pretrained, lock=False)
         net = tf.layers.max_pooling2d(net, [2, 2], 2, name='pool1')
-        net = self.conv2D_bias_relu(net, 64, 5, 1, 'SAME', name='conv2',
+        net = self.conv2D_bias_relu(net, 32, 5, 1, 'SAME', name='conv2',
                                     regularizers=self.regularizers, use_loaded=self.config.load_pretrained, lock=False)
         net = tf.layers.max_pooling2d(net, [2, 2], 2, name='pool2')
-        net = self.conv2D_bias_relu(net, 1024, 7, 1, 'VALID', name='fc1',
+        inputs = tf.layers.dropout(net, rate=self.config.drop_out_rate, training=self.training)
+        net = self.conv2D_bias_relu(net, 256, 7, 1, 'VALID', name='fc1',
                                     regularizers=self.regularizers, use_loaded=self.config.load_pretrained, lock=False)
-        flattened = tf.reshape(net, (-1, 1024))
+        flattened = tf.reshape(net, (self.config.batch_size, 256))
         net = self.fullyConnected(flattened, self.config.classes, drop_out=self.config.drop_out_rate, name='fc2',
                                 regularizers=self.regularizers, use_loaded=self.config.load_pretrained, lock=False)
         self.logit = tf.nn.softmax(net)

@@ -4,7 +4,7 @@
 
 import sys
 sys.path.append('..')
-from net.AlexNet import AlexNetConfig
+from classifiers.AlexNet import AlexNetConfig
 
 config = AlexNetConfig
 

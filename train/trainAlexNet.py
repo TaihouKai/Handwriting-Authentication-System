@@ -5,7 +5,7 @@ import tensorflow as tf
 import sys
 sys.path.append("..")
 
-from net.AlexNet import AlexNet, AlexNetConfig
+from classifiers.AlexNet import AlexNet, AlexNetConfig
 
 if __name__ == '__main__':
     config = AlexNetConfig()
