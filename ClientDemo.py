@@ -73,6 +73,6 @@ if __name__ == '__main__':
         e = HarrisSIFT.HarrisSIFT()
 
         client = HandWritingAuthClient(d, e, c)
-        client.run(cv2.imread('samples/digit_data/standard.png')[:,:,:3], scale=1)
+        client.run(cv2.imread('samples/digit_data/standard_a.png')[:,:,:3], scale=1)
 
 
