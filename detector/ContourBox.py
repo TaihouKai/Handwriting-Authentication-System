@@ -21,7 +21,7 @@ class ContourBox():
         self.kernel_size = (kernel_size, kernel_size)
 
 
-    def run(self, img):
+    def run(self, img, nms_thresh=0.05):
         """ Input must be binary image (0 or 255) / gray image (0 ~ 255)
         """
         _, thresh = cv2.threshold(img, 127, 255, 0)
@@ -32,7 +32,7 @@ class ContourBox():
             bboxes.append(box)
         bboxes = np.array(bboxes)
         bboxes = util.cord_convert.tlwh2tlbr(bboxes, tolist=False)
-        bboxes = util.nms.non_max_suppression_fast(bboxes, 0.05)
+        bboxes = util.nms.non_max_suppression_fast(bboxes, nms_thresh)
         return bboxes[1:]
 
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     n = ContourBox(kernel_size=7)
     print('Loaded model')
     t = time.time()
-    retimg = n.visualize(cv2.imread('../samples/digit_data/lfr_a.png')[:,:,:3], scale=0.3)
+    retimg = n.visualize(cv2.imread('../samples/digit_data/standard.png')[:,:,:3], scale=0.3)
     print(time.time()-t)
     cv2.imshow('contour', retimg.astype(np.uint8))
     cv2.waitKey(0)

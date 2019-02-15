@@ -77,7 +77,7 @@ class AlexNet(Network.Network):
         inputs = tf.layers.dropout(net, rate=self.config.drop_out_rate, training=self.training)
         net = self.conv2D_bias_relu(net, 256, 7, 1, 'VALID', name='fc1',
                                     regularizers=self.regularizers, use_loaded=self.load_pretrained, lock=False)
-        flattened = tf.reshape(net, (self.config.batch_size, 256))
+        flattened = tf.reshape(net, (-1, 256))
         net = self.fullyConnected(flattened, self.config.classes, drop_out=self.config.drop_out_rate, name='fc2',
                                 regularizers=self.regularizers, use_loaded=self.load_pretrained, lock=False)
         self.logit = tf.nn.softmax(net)
@@ -108,8 +108,7 @@ class AlexNet(Network.Network):
     
 
     def predict(self, img):
-        
-        pred = self.sess.run(self.pred_class, feed_dict={img: img.astype(np.float32)/255.0})
+        pred = self.sess.run(self.pred_class, feed_dict={self.img: np.array(img).astype(np.float32)/255.0})
         return pred
 
 
