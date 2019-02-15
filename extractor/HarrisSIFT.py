@@ -12,7 +12,7 @@ class HarrisSIFT():
     """ Using Harris to extract possible corner
         And Using SIFT to encoding the feature
     """
-    def __init__(self, ksize=2, block_size=3, k=0.15, blur=cv2.GaussianBlur):
+    def __init__(self, ksize=2, block_size=3, k=0.16, blur=cv2.GaussianBlur):
         self.ksize = ksize
         self.block_size = block_size
         self.k = k
@@ -26,16 +26,23 @@ class HarrisSIFT():
         return dst 
     
     def visualize(self, img, scale=0.3):
-        img = util.preprocessing.scale(img, factor=scale)
-        gray = util.preprocessing.binary(img, None, None, 0.7)
+        img = util.preprocessing.binary(img, cv2.GaussianBlur, (5,5), 0.2)
+        if scale != 1:
+            img = util.preprocessing.scale(img, factor=scale)
+        if len(img.shape) == 3:
+            gray = util.preprocessing.binary(img, None, None, 0.7)
+        else:
+            gray = img
         gray = np.float32(gray)
         dst = self.run(gray)
         #result is dilated for marking the corners, not important
         dst = cv2.dilate(dst,None)
 
         # Threshold for an optimal value, it may vary depending on the image.
+        if len(img.shape) == 2:
+            img = np.tile(np.expand_dims(img, axis=-1), [1,1,3])
         img[dst>0.01*dst.max()]=[0,0,255]
-        return img, dst
+        return img
 
 
 

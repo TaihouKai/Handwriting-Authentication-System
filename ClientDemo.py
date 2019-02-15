@@ -19,20 +19,37 @@ class HandWritingAuthClient():
         self.extractor = extractor
         self.classifier = classifier
     
-    def run(self, img, scale=0.3):
+    def preproc(self, img, scale=0.3):
+        #   Pre-processing
         simg = preprocessing.scale(img, factor=scale)
         bimg = preprocessing.binary(simg,
                                     cv2.GaussianBlur,
                                     (7,7),
                                     threshold=0.7)
-        bboxes = self.detector.run(bimg)
-        bimg = cv2.bitwise_not(bimg)
-        print(bboxes.shape)
+        return simg, bimg
+
+
+    def run(self, img, scale=0.3):
+        simg, bimg = self.preproc(img, scale=scale)
+        #   Detection
+        bboxes = self.detector.run(bimg, nms_thresh=0.1)
+
+        #   Cropping & Padding (build batch)
         records = preprocessing.crop_img(bimg, bboxes)
         records = np.array(records)
         print(records.shape)
         img_batch = list(map(lambda x: preprocessing.mold_image(x, (28,28)), records[:, 1]))
-        cv2.imshow('cropped', np.hstack(img_batch).astype(np.uint8))
+
+        #   Classification
+        pred = self.classifier.predict(img_batch)
+        print(pred)
+
+        #   Feature Extraction
+        dsts = list(map(lambda x: self.extractor.visualize(x, scale=1), img_batch))
+
+
+        cv2.imshow('dsts', np.hstack(img_batch).astype(np.uint8))
+        cv2.imshow('cropped', np.hstack(dsts).astype(np.uint8))
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
@@ -56,6 +73,6 @@ if __name__ == '__main__':
         e = HarrisSIFT.HarrisSIFT()
 
         client = HandWritingAuthClient(d, e, c)
-        client.run(cv2.imread('samples/digit_data/lfr_a.png')[:,:,:3], scale=0.3)
+        client.run(cv2.imread('samples/digit_data/standard_a.png')[:,:,:3], scale=1)
 
 
