@@ -50,9 +50,9 @@ if __name__ == '__main__':
     n = HarrisSIFT()
     print('Loaded model')
     t = time.time()
-    img, dst = n.visualize(cv2.imread('../samples/digit_data/lfr_a.png')[:,:,:3], scale=0.3)
+    img, dst = n.visualize(cv2.imread('../samples/digit_data/standard_a.png')[:,:,:3], scale=1)
     print(time.time()-t)
-    cv2.imshow('img', img)
-    cv2.imshow('dst', dst.astype(np.uint8))
+    cv2.imshow('img', util.preprocessing.scale(img.astype(np.uint8), factor=1))
+    cv2.imshow('dst', util.preprocessing.scale(dst.astype(np.uint8), factor=1))
     if cv2.waitKey(0) & 0xff == 27:
         cv2.destroyAllWindows()
