@@ -21,11 +21,11 @@ class ContourBox():
         self.kernel_size = (kernel_size, kernel_size)
 
 
-    def run(self, img, nms_thresh=0.05):
+    def run(self, img, nms_thresh=0.1):
         """ Input must be binary image (0 or 255) / gray image (0 ~ 255)
         """
         _, thresh = cv2.threshold(img, 127, 255, 0)
-        contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        _, contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         bboxes = []
         for contour in contours:
             box = cv2.boundingRect(contour)
@@ -41,10 +41,7 @@ class ContourBox():
         return self.run(binary).tolist()
 
 
-    def visualize(self, img, scale=0.5):
-        img = util.preprocessing.scale(img, factor=scale)
-        bboxes = self.generate(img)
-        print(len(bboxes))
+    def visualize(self, img, bboxes):
         for box in bboxes:
             x1, y1, x2, y2 = box
             cv2.rectangle(img, (x1, y1), (x2, y2), (0,255,0), 2)
@@ -55,7 +52,9 @@ if __name__ == '__main__':
     n = ContourBox(kernel_size=7)
     print('Loaded model')
     t = time.time()
-    retimg = n.visualize(cv2.imread('../samples/digit_data/standard.png')[:,:,:3], scale=0.3)
+    img = cv2.imread('../samples/digit_data/standard_b.png')[:,:,:3]
+    retimg = n.visualize(img, n.generate(img))
     print(time.time()-t)
-    cv2.imshow('contour', retimg.astype(np.uint8))
+    cv2.imshow('contour', util.preprocessing.scale(retimg.astype(np.uint8), factor=0.3))
     cv2.waitKey(0)
+    cv2.destroyAllWindows()

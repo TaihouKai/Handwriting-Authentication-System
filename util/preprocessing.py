@@ -39,7 +39,7 @@ def crop_img(img, bboxes):
     return list(map(lambda x: create_crop_data(img, np.array(x)), list(bboxes)))
 
 
-def mold_image(img, in_size, padd_value=0, reversed=True):
+def mold_image(img, in_size, margin=0.7, padd_value=0, reversed=True):
     """
     Args:
         img         numpy 2darray
@@ -62,6 +62,8 @@ def mold_image(img, in_size, padd_value=0, reversed=True):
         padd_x = 0
     if padd_y < 0:
         padd_y = 0
+    padd_x += int(in_size[0] * margin)
+    padd_y += int(in_size[1] * margin)
     padd = [[padd_y//2, padd_y//2], [padd_x//2, padd_x//2]]
     if len(img.shape) == 3:
         padd.append([0,0])

@@ -38,7 +38,10 @@ class HandWritingAuthClient():
         records = preprocessing.crop_img(bimg, bboxes)
         records = np.array(records)
         print(records.shape)
-        img_batch = list(map(lambda x: preprocessing.mold_image(x, (28,28)), records[:, 1]))
+        img_batch = list(map(lambda x: 
+                                    preprocessing.mold_image(x, 
+                                                            (28, 28)),
+                            records[:, 1]))
 
         #   Classification
         pred = self.classifier.predict(img_batch)
@@ -48,8 +51,8 @@ class HandWritingAuthClient():
         dsts = list(map(lambda x: self.extractor.visualize(x, scale=1), img_batch))
 
 
-        cv2.imshow('dsts', np.hstack(img_batch).astype(np.uint8))
-        cv2.imshow('cropped', np.hstack(dsts).astype(np.uint8))
+        cv2.imshow('cropped', np.hstack(img_batch).astype(np.uint8))
+        cv2.imshow('dst img', np.hstack(dsts).astype(np.uint8))
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
@@ -73,6 +76,6 @@ if __name__ == '__main__':
         e = HarrisSIFT.HarrisSIFT()
 
         client = HandWritingAuthClient(d, e, c)
-        client.run(cv2.imread('samples/digit_data/standard_a.png')[:,:,:3], scale=1)
+        client.run(cv2.imread('samples/digit_data/standard_b.png')[:,:,:3], scale=1)
 
 
