@@ -5,16 +5,16 @@
 
 * Tasks
     * [ ] Find a better name
-    * [ ] Image Processing Stage
+    * [x] Image Processing Stage
         * [x] Detection
             * [x]   EdgeBox -proposal extraction
             * [x]   ContourBox -proposal extraction
             * [x]   AlexNet@MNIST classification
         * [x] Feature Extraction
             * [x]   SIFT / ORB
-        * [ ] Module test
+        * [x] Module test
             * [x]   Detector + Classifier
-            * [ ]   Detector + Classifier + Extractor
+            * [x]   Detector + Classifier + Extractor
     * [ ] Encryption & Decryption
         * [ ] Homomorphic (Recommended)
         * [ ] RSA (Optional)

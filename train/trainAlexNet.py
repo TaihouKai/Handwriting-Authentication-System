@@ -1,5 +1,12 @@
 #coding: utf-8
 
+""" 
+mpsk's CVDL LayerLibrary @ tf
+Version: 2.0
+
+Copyright 2018
+"""
+
 import os
 import tensorflow as tf
 import sys

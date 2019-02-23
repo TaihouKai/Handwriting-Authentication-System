@@ -7,7 +7,6 @@ import cv2
 from . import Network
 from . import Regularizer
 
-
 """
 Automous Mouse Painting Authentication
     PengFei Wang, Fangrui Liu, Todd Zheng

@@ -1,4 +1,10 @@
 # coding: utf-8
+
+"""
+HWAT Project
+Copyright 2019
+"""
+
 import cv2
 import sys
 import time

@@ -1,10 +1,16 @@
 # coding: utf-8
 
+
+"""
+HWAT Project
+Copyright 2019
+"""
+
 import cv2
 import time
 import numpy as np
 
-from extractor import HarrisSIFT
+from extractor import SIFT
 from detector import ContourBox
 from classifier import AlexNet
 
@@ -29,7 +35,7 @@ class HandWritingAuthClient():
         return simg, bimg
 
 
-    def run(self, img, scale=0.3):
+    def run(self, img, scale=0.3, debug=False):
         simg, bimg = self.preproc(img, scale=scale)
         #   Detection
         bboxes = self.detector.run(bimg, nms_thresh=0.1)
@@ -48,13 +54,32 @@ class HandWritingAuthClient():
         print(pred)
 
         #   Feature Extraction
-        dsts = list(map(lambda x: self.extractor.visualize(x, scale=1), img_batch))
+        des = list(map(lambda x: self.extractor.run(
+                                        np.tile(np.expand_dims(x, axis=-1),[1,1,3])), 
+                                    img_batch))
 
+        #   In registration Process:
+        #       We match the feature in each class
+        #       Then we count the presence of the similar feature
+        #       Keep the common feature in a person's writing
+        #   In Verification Process:
+        #       We extract the feature by class
+        #       Then we send the feature to the server
+        #       Use Homomorphic Crypto (If Applicable) to match the feature
+        #   
+        #   Hint:
+        #       We can use SVM to give the confidence of verification
 
-        cv2.imshow('cropped', np.hstack(img_batch).astype(np.uint8))
-        cv2.imshow('dst img', np.hstack(dsts).astype(np.uint8))
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        #   build feature detection result
+        features = {}
+        for idx in range(len(pred)):
+            #   dict : '<class_id>' : feature array in shape of (num_detection, 128)
+            features[str(pred[idx])] = des[idx][1]
+        if debug:
+            cv2.imshow('cropped', np.hstack(img_batch).astype(np.uint8))
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        return features
 
 
 
@@ -73,9 +98,12 @@ if __name__ == '__main__':
 
         d = ContourBox.ContourBox()
 
-        e = HarrisSIFT.HarrisSIFT()
+        e = SIFT.SIFT()
 
         client = HandWritingAuthClient(d, e, c)
-        client.run(cv2.imread('samples/digit_data/standard_b.png')[:,:,:3], scale=1)
-
-
+        features = client.run(cv2.imread('samples/digit_data/standard_b.png')[:,:,:3], scale=1)
+        for key in features.keys():
+            if features[key] is None:
+                print(key, ":\tNone")
+            else:
+                print(key, ":\t", features[key].shape)

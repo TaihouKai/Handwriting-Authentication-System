@@ -2,6 +2,13 @@
 
 #   Generate empty config
 
+""" 
+mpsk's CVDL LayerLibrary @ tf
+Version: 2.0
+
+Copyright 2018
+"""
+
 import sys
 sys.path.append('..')
 from classifiers.AlexNet import AlexNetConfig

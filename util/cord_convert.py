@@ -1,6 +1,12 @@
 #coding: utf-8
 import numpy as np
 
+""" 
+mpsk's CVDL LayerLibrary @ tf
+Version: 2.0
+
+Copyright 2018
+"""
 
 def cwh2tlbr(bbox, tolist=True):
     """ Cx, Cy, W, H to TopLeft BottomRight
