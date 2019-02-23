@@ -1,6 +1,10 @@
 # Handwriting-Authentication-System
 > We need a better name ↑
 
+#   License
+
+> We currently DO NOT offer any license.
+
 #   Dev Log
 
 * Tasks
