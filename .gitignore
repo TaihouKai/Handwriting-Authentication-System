@@ -21,3 +21,6 @@ checkpoint
 #   Ignore data folder
 samples/*data
 NIST_DATA/
+*.jpg
+*.zip
+*.csv
