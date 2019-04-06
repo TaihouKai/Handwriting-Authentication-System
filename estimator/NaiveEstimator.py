@@ -4,6 +4,14 @@ import numpy as np
 import sys
 sys.path.append('..')
 
+"""
+Fangrui Liu     mpskex@github   mpskex@163.com
+Department of Computer Science and Technology
+Faculty of Information
+Beijing University of Technology 
+Copyright 2019
+"""
+
 class NaiveEstimator():
     """
     Naive Estimator that gives similarity between two given samples
@@ -19,14 +27,17 @@ class NaiveEstimator():
         Compute the similarity between two sets of features
         :param matches:     list of tuple of DMatch
         """
-        distances = []
-        for m, in matches:
-            distances.append(abs(m.distance))
-        distances = np.array(distances)
-        #   We use the Mean & VAR to compute similarity
-        mean = np.mean(distances)
-        var = np.var(distances)
-        return mean, var
+        if len(matches) > 0:
+            distances = []
+            for m, in matches:
+                distances.append(abs(m.distance))
+            distances = np.array(distances)
+            #   We use the Mean & VAR to compute similarity
+            mean = np.mean(distances)
+            var = np.var(distances)
+            return mean, var
+        else:
+            return 0.0, 0.0
 
 
 if __name__ == '__main__':
@@ -52,6 +63,6 @@ if __name__ == '__main__':
         return util.preprocessing.binary(img, cv2.GaussianBlur, (7, 7), threshold=0.75)
 
     test.batch_process(preproc)
-    r_same, r_cross = test.test(test_fn, summ_fn)
+    r_same, r_cross = test.cross_test(test_fn, summ_fn)
     print(np.mean(r_same, axis=-1), np.var(r_same, axis=-1))
     print(np.mean(r_cross, axis=-1), np.var(r_cross, axis=-1))

@@ -1,7 +1,10 @@
 # coding: utf-8
 
 """
-HWAT Project
+Fangrui Liu     mpskex@github   mpskex@163.com
+Department of Computer Science and Technology
+Faculty of Information
+Beijing University of Technology
 Copyright 2019
 """
 
@@ -26,6 +29,13 @@ def binary(img, blur, kernel_size, threshold=0.7):
 
 def scale(img, factor=0.5):
     return cv2.resize(img, (int(factor*img.shape[1]), int(factor*img.shape[0])))
+
+def size_align(img, height=32):
+    ratio = img.shape[1] / float(img.shape[0])
+    size = (int(ratio*height), int(height))
+    return cv2.resize(img, size)
+
+
 
 
 def create_crop_data(img, bbox):

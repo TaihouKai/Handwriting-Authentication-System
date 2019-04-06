@@ -1,7 +1,10 @@
 #coding: utf-8
 
 """
-HWAT Project
+Fangrui Liu     mpskex@github   mpskex@163.com
+Department of Computer Science and Technology
+Faculty of Information
+Beijing University of Technology
 Copyright 2019
 """
 

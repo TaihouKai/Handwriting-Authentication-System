@@ -30,6 +30,7 @@ class SIFT():
     def __init__(self, debug=False):
         self.sift = cv2.xfeatures2d.SIFT_create()
         self.debug = debug
+        self.name = 'SIFT'
 
     def run(self, img):
         """ Accept RGB image
