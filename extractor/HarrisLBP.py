@@ -38,17 +38,15 @@ class HarrisLBP():
         kp = np.transpose(np.array(kp), [1,0])
         return kp, feat
     
-    def visualize(self, img, scale=0.3):
-        gray = np.float32(img)
-        kp = self.run(gray)
+    def visualize(self, img, kp, color=(0, 0, 255)):
         kp = kp.tolist()
-        #result is dilated for marking the corners, not important
+        # result is dilated for marking the corners, not important
 
         # Threshold for an optimal value, it may vary depending on the image.
         if len(img.shape) == 2:
-            img = np.tile(np.expand_dims(img, axis=-1), [1,1,3])
+            img = np.tile(np.expand_dims(img, axis=-1), [1, 1, 3])
         for k in kp:
-            cv2.circle(img, tuple(k)[::-1], 5, (0, 0, 255), 2)
+            cv2.circle(img, tuple(k)[::-1], 5, color, 2)
         return img
 
 

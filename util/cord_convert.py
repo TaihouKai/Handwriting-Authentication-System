@@ -68,21 +68,6 @@ def tlbr_rev(bbox, tolist=False):
         return bbox
 
 
-def tlwh2tlbr(bbox, tolist=False):
-    """
-    :param bbox:
-    :param tolist:
-    :return:
-    """
-    x1, y1, w, h = np.split(bbox, 4, axis=-1)
-    x2 = x1 + w
-    y2 = y1 + h
-    bbox = np.concatenate([x1, y1, x2, y2], axis=-1)
-    if tolist:
-        return bbox.tolist()
-    else:
-        return bbox
-
 def tlbr2tlwh(bbox, tolist=False):
     """
     :param bbox:
@@ -97,3 +82,44 @@ def tlbr2tlwh(bbox, tolist=False):
         return bbox.tolist()
     else:
         return bbox
+
+
+def norm_point(point, norm_shape, reversed_dim=True):
+    """
+    norm point to 0-1
+    NOTE: the order of the point's dim is not changed after the function
+    :param point:           ndarray of shape [num_point, num_dim]
+    :param norm_shape:      ndarray of shape [num_dim]
+    :param reversed_dim:    If the shape's dim has be reversed
+    :return:
+    """
+    assert len(np.array(norm_shape).shape) == 1
+    assert point.shape[-1] == np.array(norm_shape).shape[0]
+    point = point.copy()
+    for dim in range(np.array(norm_shape).shape[0]):
+        point[:, dim] = point[:, dim] / norm_shape[::(int(reversed_dim) * 2 - 1)][dim]
+    return point
+
+
+def denorm_point(point, norm_shape, reversed_dim=True):
+    """
+    denorm point to 0-1
+    NOTE: the order of the point's dim is not changed after the function
+    :param point:           ndarray of shape [num_point, num_dim]
+    :param norm_shape:      ndarray of shape [num_dim]
+    :param reversed_dim:    If the shape's dim has be reversed
+    :return:
+    """
+    assert len(np.array(norm_shape).shape) == 1
+    assert point.shape[-1] == np.array(norm_shape).shape[0]
+    point = point.copy()
+    for dim in range(np.array(norm_shape).shape[0]):
+        point[:, dim] = point[:, dim] * norm_shape[::(int(reversed_dim) * 2 - 1)][dim]
+    return point
+
+
+if __name__ == '__main__':
+    a = norm_point(np.transpose(np.array([[12, 24], [8, 36]]), axes=[1, 0]), np.array([2, 4]), reversed_dim=True)
+    b = denorm_point(a, np.array([2, 4]), reversed_dim=True)
+    print(a)
+    print(b)

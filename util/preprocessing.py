@@ -54,6 +54,16 @@ def crop_img(img, bboxes):
     """
     return list(map(lambda x: create_crop_data(img, np.array(x)), list(bboxes)))
 
+def decrop_img(img, bboxes, patches):
+    """
+    Patch those images back to images
+    """
+    # Threshold for an optimal value, it may vary depending on the image.
+    if len(img.shape) == 2:
+        img = np.tile(np.expand_dims(img, axis=-1), [1, 1, 3])
+    for bbox, bidx in zip(bboxes, range(bboxes.shape[0])):
+        img[bbox[1]:bbox[3], bbox[0]:bbox[2]] = patches[bidx]
+    return img
 
 def mold_image(img, in_size, margin=0.7, padd_value=0, reversed=True):
     """
