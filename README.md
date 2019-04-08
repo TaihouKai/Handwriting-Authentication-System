@@ -20,11 +20,11 @@
             * [x]   Detector + Classifier
             * [x]   Detector + Classifier + Extractor
     * [ ] Encryption & Decryption
-        * [ ] Homomorphic (Recommended)
-        * [ ] RSA (Optional)
+        * [x] Homomorphic (Seems not possible)
+        * [ ] RSA
     * [ ] Backend
         * [ ] Platform (container / API)
-        * [ ] Client UI / ALgorithm re-implementation
-        * [ ] Data Collection
+        * [x] Client UI / Algorithm re-implementation
+        * [x] Data Collection
 
 
