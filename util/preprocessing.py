@@ -1,7 +1,10 @@
 # coding: utf-8
 
 """
-HWAT Project
+Fangrui Liu     mpskex@github   mpskex@163.com
+Department of Computer Science and Technology
+Faculty of Information
+Beijing University of Technology
 Copyright 2019
 """
 
@@ -27,6 +30,13 @@ def binary(img, blur, kernel_size, threshold=0.7):
 def scale(img, factor=0.5):
     return cv2.resize(img, (int(factor*img.shape[1]), int(factor*img.shape[0])))
 
+def size_align(img, height=32):
+    ratio = img.shape[1] / float(img.shape[0])
+    size = (int(ratio*height), int(height))
+    return cv2.resize(img, size)
+
+
+
 
 def create_crop_data(img, bbox):
     """
@@ -44,6 +54,16 @@ def crop_img(img, bboxes):
     """
     return list(map(lambda x: create_crop_data(img, np.array(x)), list(bboxes)))
 
+def decrop_img(img, bboxes, patches):
+    """
+    Patch those images back to images
+    """
+    # Threshold for an optimal value, it may vary depending on the image.
+    if len(img.shape) == 2:
+        img = np.tile(np.expand_dims(img, axis=-1), [1, 1, 3])
+    for bbox, bidx in zip(bboxes, range(bboxes.shape[0])):
+        img[bbox[1]:bbox[3], bbox[0]:bbox[2]] = patches[bidx]
+    return img
 
 def mold_image(img, in_size, margin=0.7, padd_value=0, reversed=True):
     """

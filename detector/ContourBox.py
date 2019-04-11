@@ -1,7 +1,10 @@
 #coding: utf-8
 
 """
-HWAT Project
+Fangrui Liu     mpskex@github   mpskex@163.com
+Department of Computer Science and Technology
+Faculty of Information
+Beijing University of Technology
 Copyright 2019
 """
 
@@ -26,7 +29,7 @@ class ContourBox():
         self.kernel_size = (kernel_size, kernel_size)
 
 
-    def run(self, img, nms_thresh=0.1):
+    def run(self, img, nms_thresh=0.05):
         """ Input must be binary image (0 or 255) / gray image (0 ~ 255)
         """
         _, thresh = cv2.threshold(img, 127, 255, 0)
@@ -46,10 +49,13 @@ class ContourBox():
         return self.run(binary).tolist()
 
 
-    def visualize(self, img, bboxes):
+    def visualize(self, img, bboxes, color=(0, 255, 0)):
+        # Threshold for an optimal value, it may vary depending on the image.
+        if len(img.shape) == 2:
+            img = np.tile(np.expand_dims(img, axis=-1), [1, 1, 3])
         for box in bboxes:
             x1, y1, x2, y2 = box
-            cv2.rectangle(img, (x1, y1), (x2, y2), (0,255,0), 2)
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
         return img
 
 
