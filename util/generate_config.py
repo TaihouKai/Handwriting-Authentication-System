@@ -2,11 +2,12 @@
 
 #   Generate empty config
 
-""" 
-mpsk's CVDL LayerLibrary @ tf
-Version: 2.0
-
-Copyright 2018
+"""
+Fangrui Liu     mpskex@github   mpskex@163.com
+Department of Computer Science and Technology
+Faculty of Information
+Beijing University of Technology
+Copyright 2019
 """
 
 import sys

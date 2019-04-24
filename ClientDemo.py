@@ -10,9 +10,9 @@ import cv2
 import time
 import numpy as np
 
-from extractor import SIFT
-from detector import ContourBox
-from classifier import AlexNet
+from extractor import *
+from detector import *
+from classifier import *
 
 from util import preprocessing, cord_convert
 
@@ -30,7 +30,7 @@ class HandWritingAuthClient():
         simg = preprocessing.scale(img, factor=scale)
         bimg = preprocessing.binary(simg,
                                     cv2.GaussianBlur,
-                                    (7,7),
+                                    (7, 7),
                                     threshold=0.7)
         return simg, bimg
 
