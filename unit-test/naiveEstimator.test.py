@@ -1,4 +1,10 @@
 # coding: utf-8
+
+"""
+HWAT Project
+Copyright 2019
+"""
+
 import cv2
 import numpy as np
 import sys
@@ -8,11 +14,6 @@ from util.CrossClassTest import CrossClassTest
 from util import preprocessing
 from extractor.SIFT import SIFT
 from estimator.NaiveEstimator import NaiveEstimator
-
-"""
-HWAT Project
-Copyright 2019
-"""
 
 if __name__ == '__main__':
     naive = NaiveEstimator()

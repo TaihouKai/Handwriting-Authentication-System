@@ -32,7 +32,7 @@ class HarrisLBP():
         """ Input must be gray image
         """
         feat = None
-        dst = cv2.cornerHarris(img, self.ksize, self.block_size , self.k)
+        dst = cv2.cornerHarris(img, self.block_size, self.ksize, self.k)
         ret, dst = cv2.threshold(dst, 0.01*dst.max(), 255, 0)
         kp = np.where(dst>0.01*dst.max())
         kp = np.transpose(np.array(kp), [1,0])

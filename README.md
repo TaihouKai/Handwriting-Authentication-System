@@ -1,4 +1,5 @@
 # Handwriting-Authentication-System
+Wang Pengfei, Liu Fangrui, Zheng Qiushi
 > We need a better name ↑
 
 #   License
