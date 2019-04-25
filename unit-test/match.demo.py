@@ -50,7 +50,7 @@ def test_match(ins, test_img_a, test_img_b, cross_pad=200):
     bimg_a, bboxes_a, ratios_a, kps_a, feats_a = ins.extract(test_img_a)
     bimg_b, bboxes_b, ratios_b, kps_b, feats_b = ins.extract(test_img_b)
     ratio_match = PointMatch.ratio_match(ratios_a, ratios_b, method='auth')
-    print(ratio_match)
+
     #   parse internal var
     obboxes_a = bboxes_a
     obboxes_b = bboxes_b
@@ -61,8 +61,9 @@ def test_match(ins, test_img_a, test_img_b, cross_pad=200):
     #   kp_pairs has shape of [bboxes, matches, (pair_a, pair_b), (y, x)]
     kp_pairs = []
     for match in ratio_match.tolist():
+        print(match)
         single_pairs = []
-        kps_match = PointMatch.keypoints_match(kps_a[match[0]], kps_b[match[1]], match_threshold=0.5)
+        kps_match = PointMatch.keypoints_match(kps_a[match[0]], kps_b[match[1]], alpha=0.05,  match_threshold=0.5)
         ka = cord_convert.denorm_point(kps_a[match[0]], bboxes_a[match[0], 2:4])
         kb = cord_convert.denorm_point(kps_b[match[1]], bboxes_b[match[1], 2:4])
         for km in kps_match.tolist():
@@ -70,6 +71,7 @@ def test_match(ins, test_img_a, test_img_b, cross_pad=200):
             pair_b = kb[km[1]] + bboxes_b[match[1], :2] + np.array([0, bimg_a.shape[1]])
             single_pairs.append([pair_a.astype(np.int), pair_b.astype(np.int)])
         kp_pairs.append(single_pairs)
+        print(len(single_pairs))
 
     #   visualize
     bimg_a_pad = np.pad(bimg_a, [[0, cross_pad], [0, 0]], mode='constant', constant_values=255)
@@ -92,6 +94,14 @@ def test_match(ins, test_img_a, test_img_b, cross_pad=200):
                       tuple(obboxes_b[ratio_match[kpidx][1], :2]+np.array([bimg_a_pad.shape[1], 0])+np.array([0, cross_pad])),
                       tuple(obboxes_b[ratio_match[kpidx][1], 2:]+np.array([bimg_a_pad.shape[1], 0])+np.array([0, cross_pad])),
                       color=colors[(kpidx-2)%len(colors)])
+        cv2.putText(stacked, 'box'+str(kpidx)+'-'+str(bboxes_b[ratio_match[kpidx][0], 2]*bboxes_b[ratio_match[kpidx][0], 3]),
+                    tuple(obboxes_b[ratio_match[kpidx][1], :2]+np.array([bimg_a_pad.shape[1], 0])+np.array([0, cross_pad])),
+                    cv2.FONT_HERSHEY_COMPLEX, 0.5,
+                    color=colors[(kpidx-2)%len(colors)])
+        cv2.putText(stacked, 'box'+str(kpidx)+'-'+str(bboxes_a[ratio_match[kpidx][0], 2]*bboxes_a[ratio_match[kpidx][0], 3]),
+                    tuple(obboxes_a[ratio_match[kpidx][0], :2]),
+                    cv2.FONT_HERSHEY_COMPLEX, 0.5,
+                    color=colors[(kpidx-2)%len(colors)])
     cv2.imwrite('save.jpg', stacked)
 
 if __name__ == '__main__':

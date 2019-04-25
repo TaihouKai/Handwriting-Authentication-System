@@ -43,10 +43,25 @@ class HandWritingAuthInstance():
                                     threshold=0.9)
         return simg, bimg
 
+    def get_area(self, bboxes):
+        """
+        receive TLBR bboxes
+        :param bboxes:
+        :return:
+        """
+        _, _, w, h = np.split(cord_convert.tlbr2tlwh(bboxes), 4, axis=-1)
+        area = w * h
+        return np.squeeze(area, axis=-1)
+
+
     def extract(self, img):
         simg, bimg = self.preproc(img)
         #   Get the Bounding Boxes
         bboxes = self.detector.run(bimg, nms_thresh=0.1)
+        bindx = np.argsort(bboxes[:, 0])
+        bboxes = bboxes[bindx]
+        areas = self.get_area(bboxes)
+        bboxes = np.delete(bboxes, np.where(areas<100), axis=0)
         #   Cropping & Padding (build batch)
         records = preprocessing.crop_img(bimg, bboxes)
         #   Transpose the list into arg dimension

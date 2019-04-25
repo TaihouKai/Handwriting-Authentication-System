@@ -38,7 +38,7 @@ def ratio_match(ratios_reg, ratios_auth, method='auth'):
         else:
             '''
             #   looser rules for the ratio match
-            if abs(r_a - r_b) <= 5:
+            if abs(r_a - r_b) <= 1.7:
                 return True
             #'''
             return True
@@ -128,7 +128,7 @@ def jaccard(box_a, box_b):
     union = area_a + area_b - inter
     return inter / union  # [A,B]
 
-def keypoints_match(keypoints_a, keypoints_b, match_threshold=0.5):
+def keypoints_match(keypoints_a, keypoints_b, alpha=0.2, match_threshold=0.5):
     """
     Match sets of key-points
     :param keypoints_a:     ndarray of shape [kp_num_a, 2]
@@ -138,7 +138,7 @@ def keypoints_match(keypoints_a, keypoints_b, match_threshold=0.5):
 
     """
     kp_a, kp_b = list(map(lambda kp: cord_convert.cwh2tlbr(
-        np.concatenate([kp, 1*np.ones(list(kp.shape[:-1])+[2])], axis=-1)),
+        np.concatenate([kp, alpha*np.ones(list(kp.shape[:-1])+[2])], axis=-1)),
                           [keypoints_a, keypoints_b]))
     j = jaccard(kp_a, kp_b)
     match = np.array(np.where(j > match_threshold))
