@@ -34,13 +34,13 @@ def ratio_match(ratios_reg, ratios_auth, method='auth'):
         r_a, r_b = r_a - 1, r_b - 1
         #   same orientation
         if r_a * r_b < 0:
-            '''
-            #   looser rules for the ratio match
-            if abs(r_a - r_b) <= std_err:
-                return True
-            '''
             return False
         else:
+            '''
+            #   looser rules for the ratio match
+            if abs(r_a - r_b) <= 5:
+                return True
+            #'''
             return True
 
     def naiveAuth(r_idx, ratios_reg, ratios_auth, idx_offset_r, idx_offset_a):
@@ -134,7 +134,7 @@ def keypoints_match(keypoints_a, keypoints_b, match_threshold=0.5):
     :param keypoints_a:     ndarray of shape [kp_num_a, 2]
     :param keypoints_b:     ndarray of shape [kp_num_b, 2]
     :param match_threshold: threshold of match intersection
-    :return match:          [matches, (ind())]
+    :return match:          [matches, 2]
 
     """
     kp_a, kp_b = list(map(lambda kp: cord_convert.cwh2tlbr(

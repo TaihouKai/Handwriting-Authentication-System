@@ -16,7 +16,6 @@ from classifier import *
 from util import *
 
 
-
 class HandWritingAuthInstance():
     """ Handwriting Authentication Client
     """
@@ -44,6 +43,41 @@ class HandWritingAuthInstance():
                                     threshold=0.9)
         return simg, bimg
 
+    def extract(self, img):
+        simg, bimg = self.preproc(img)
+        #   Get the Bounding Boxes
+        bboxes = self.detector.run(bimg, nms_thresh=0.1)
+        #   Cropping & Padding (build batch)
+        records = preprocessing.crop_img(bimg, bboxes)
+        #   Transpose the list into arg dimension
+        _, cimgs = list(map(list, zip(*records)))
+
+        #   Collect result from every bounding boxes
+        ratios, kps, feats = [], [], []
+        for cidx in range(len(records)):
+            #   Get the result from extractor (SIFT or Harris+LBP)
+            result = self.extractor.run(cimgs[cidx])
+            if self.extractor.name == 'SIFT':
+                #   SIFT is a OpenCV Built-in function and it's non-free
+                #   returns a Python-unfriendly type -- list of <DMatch>
+                #   Maybe we need to do this in Python code
+                #   or write a parser for this
+                #   TODO: SIFT Feature Registration
+                kp, feat = None, None
+                raise NotImplementedError
+            elif self.extractor.name == 'HarrisLBP':
+                #   For Harris+LBP, it's easy for us to extract those corners
+                #   By using those key-points match functions, we can collect
+                #   and calculate average position of PoI.
+                kp, feat = result
+            else:
+                raise ValueError('Invalid extractor!')
+            kps.append(cord_convert.norm_point(kp.astype(np.float32), cimgs[cidx].shape, reversed_dim=True))
+            feats.append(feat)
+            wh = cord_convert.tlbr2cwh(bboxes[cidx])[2:]
+            ratios.append(wh[1]/float(wh[0]))
+        return bimg, bboxes, ratios, kps, feats
+
     def register(self, imglist, min_poi=6, update_weight=0.3):
         """
         Registration process
@@ -62,41 +96,7 @@ class HandWritingAuthInstance():
         clct_ratio, clct_kp, clct_feat = [], [], []
         clct_idx = 0
         for img in imglist:
-            simg, bimg = self.preproc(img)
-            #   Get the Bounding Boxes
-            bboxes = self.detector.run(bimg, nms_thresh=0.1)
-            if self.debug:
-                cv2.imwrite('vis'+str(clct_idx+1)+'.jpg', self.detector.visualize(bimg, bboxes))
-                clct_idx += 1
-            #   Cropping & Padding (build batch)
-            records = preprocessing.crop_img(bimg, bboxes)
-            #   Transpose the list into arg dimension
-            _, cimgs = list(map(list, zip(*records)))
-
-            #   Collect result from every bounding boxes
-            ratios, kps, feats = [], [], []
-            for cidx in range(len(records)):
-                #   Get the result from extractor (SIFT or Harris+LBP)
-                result = self.extractor.run(cimgs[cidx])
-                if self.extractor.name == 'SIFT':
-                    #   SIFT is a OpenCV Built-in function and it's non-free
-                    #   returns a Python-unfriendly type -- list of <DMatch>
-                    #   Maybe we need to do this in Python code
-                    #   or write a parser for this
-                    #   TODO: SIFT Feature Registration
-                    kp, feat = None, None
-                    raise NotImplementedError
-                elif self.extractor.name == 'HarrisLBP':
-                    #   For Harris+LBP, it's easy for us to extract those corners
-                    #   By using those key-points match functions, we can collect
-                    #   and calculate average position of PoI.
-                    kp, feat = result
-                else:
-                    raise ValueError('Invalid extractor!')
-                kps.append(cord_convert.norm_point(kp.astype(np.float32), cimgs[cidx].shape, reversed_dim=True))
-                feats.append(feat)
-                wh = cord_convert.tlbr2cwh(bboxes[cidx])[2:]
-                ratios.append(wh[1]/float(wh[0]))
+            _, _, ratios, kps, feats = self.extract(img)
             list(map(lambda l, elem: l.append(elem), [clct_ratio, clct_kp, clct_feat], [ratios, kps, feats]))
 
         #   Summarize the bio auth info
@@ -173,8 +173,6 @@ class HandWritingAuthInstance():
                 bimg = preprocessing.decrop_img(bimg, bboxes, cimgs)
                 cv2.imwrite('reg'+str(clct_idx+1)+'.jpg', self.detector.visualize(bimg, bboxes))
                 clct_idx += 1
-
-
         return (reg_ratio, reg_kp, reg_feat), True, 'Success'
 
     def authenticate(self, img):
