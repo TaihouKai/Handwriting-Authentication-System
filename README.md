@@ -20,12 +20,11 @@ Wang Pengfei, Liu Fangrui, Zheng Qiushi
         * [x] Module test
             * [x]   Detector + Classifier
             * [x]   Detector + Classifier + Extractor
-    * [ ] Encryption & Decryption
-        * [x] Homomorphic (Seems not possible)
-        * [ ] RSA
     * [ ] Backend
         * [ ] Platform (container / API)
         * [x] Client UI / Algorithm re-implementation
         * [x] Data Collection
 
+#   MEMO
 
+* Add this function to code: relative position of the characters need to be checked as well!
