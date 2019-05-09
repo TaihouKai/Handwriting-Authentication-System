@@ -27,4 +27,6 @@ Wang Pengfei, Liu Fangrui, Zheng Qiushi
 
 #   MEMO
 
-* Add this function to code: relative position of the characters need to be checked as well!
+* Add this function: relative position of the characters need to be checked as well!
+
+* Add this function: return registered position to the user. It should be an optional function. 
