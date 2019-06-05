@@ -1,6 +1,6 @@
 # Handwriting-Authentication-System
-Wang Pengfei, Liu Fangrui, Zheng Qiushi
-> We need a better name ↑
+
+Wang Pengfei, Liu Fangrui, Zheng Qiushi, Google LLC
 
 #   License
 
@@ -9,7 +9,6 @@ Wang Pengfei, Liu Fangrui, Zheng Qiushi
 #   Dev Log
 
 * Tasks
-    * [ ] Find a better name
     * [x] Image Processing Stage
         * [x] Detection
             * [x]   EdgeBox -proposal extraction
