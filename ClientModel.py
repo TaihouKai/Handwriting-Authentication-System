@@ -12,7 +12,8 @@ import numpy as np
 
 from extractor import *
 from detector import *
-from classifier import *
+# Cannot install tensorflow in py2 env using pip
+#from classifier import *
 from util import *
 
 
@@ -197,6 +198,7 @@ class HandWritingAuthInstance():
         :return:
         """
         #   TODO:   Auth Process
+        
 
 
 if __name__ == '__main__':
