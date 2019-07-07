@@ -57,9 +57,10 @@ class HandWritingAuthInstance():
 
     def extract(self, img):
         simg, bimg = self.preproc(img)
+
         #   Get the Bounding Boxes
         bboxes = self.detector.run(bimg, nms_thresh=0.1)
-        bindx = np.argsort(bboxes[:, 0])
+        bindx = np.argsort(np.array(bboxes)[:, 0])
         bboxes = bboxes[bindx]
         areas = self.get_area(bboxes)
         bboxes = np.delete(bboxes, np.where(areas<100), axis=0)
@@ -191,13 +192,67 @@ class HandWritingAuthInstance():
                 clct_idx += 1
         return (reg_ratio, reg_kp, reg_feat), True, 'Success'
 
-    def authenticate(self, img):
+    def authenticate(self, img, model, poi_match_thresh=6):
         """
         Authentication process
-        :param img:
+        match the feature extracted from input image with the info in model.
+                     `ratio_match`                    `kp_match`
+        Ratio match ===============> Key-point match ============> feature match
+
+        *   count the matched key-point and calculate the mean one
+        *   give the confident ratio estimation by grab top-k result
+
+        :param imglist:         list of images
+        :param min_poi:         minimum PoI number
         :return:
         """
-        #   TODO:   Auth Process
+        reg_ratio, reg_kp, reg_feat = model
+        assert reg_feat is not None and reg_kp is not None and reg_feat is not None
+        _, _, ratios, kps, feats = self.extract(img)
+
+        #   To simplify the process, we only accept a set of pictures
+        #   We can do more than this, online-registration process actually is available
+        single_ratios = np.array(ratios)
+        #   match ratios
+        ratio_match = PointMatch.ratio_match(reg_ratio[:, 0].tolist(), single_ratios, method='reg')
+
+        for ridx, aidx in zip(ratio_match[:, 0].tolist(), ratio_match[:, 1].tolist()):
+            #   Register key-points
+            #   match all key-points with
+            kp_match = PointMatch.keypoints_match(reg_kp[ridx][:, :2], np.array(kps)[aidx])
+        if self.debug:
+            clct_idx = 0
+            simg, bimg = self.preproc(img)
+            #   Get the Bounding Boxes
+            bboxes = self.detector.run(bimg, nms_thresh=0.1)
+            #   Cropping & Padding (build batch)
+            records = preprocessing.crop_img(bimg, bboxes)
+            #   Transpose the list into arg dimension
+            _, cimgs = list(map(list, zip(*records)))
+
+            ratios = []
+            for cidx in range(len(cimgs)):
+                _kp, _ = self.extractor.run(cimgs[cidx])
+                cimgs[cidx] = self.extractor.visualize(cimgs[cidx], _kp, color=(255, 0, 0))
+                wh = cord_convert.tlbr2cwh(bboxes[cidx])[2:]
+                ratios.append(wh[1] / float(wh[0]))
+
+            ratio_match = PointMatch.ratio_match(reg_ratio[:, 0].tolist(), ratios, method='reg')
+            for m in ratio_match:
+                cimgs[m[1]] = self.extractor.visualize(
+                    cimgs[m[1]],
+                    cord_convert.denorm_point(reg_kp[m[0]][:, :2], cimgs[m[1]].shape[:2]).astype(np.int32),
+                    color=(0, 0, 255))
+
+            bimg = preprocessing.decrop_img(bimg, bboxes, cimgs)
+            cv2.imwrite('reg' + str(clct_idx + 1) + '.jpg', self.detector.visualize(bimg, bboxes))
+
+        # validate the matched ratios and features and give the result
+        ret = True
+        if len(kp_match) < poi_match_thresh:
+            return False, 'Mismatched'
+        else:
+            return True, 'Success'
         
 
 
@@ -210,3 +265,9 @@ if __name__ == '__main__':
     client = HandWritingAuthInstance(d, e, debug=True)
     reg_info, status, status_info = client.register(test.classes[0], min_poi=6)
     reg_ratio, reg_kp, reg_feat = reg_info
+    ret = client.authenticate(test.classes[0][0], reg_info, poi_match_thresh=6)
+    print(ret)
+    ret = client.authenticate(test.classes[1][0], reg_info, poi_match_thresh=6)
+    print(ret)
+    ret = client.authenticate(test.classes[2][0], reg_info, poi_match_thresh=6)
+    print(ret)

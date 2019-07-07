@@ -21,7 +21,7 @@ class HarrisLBP():
     """ Using Harris to extract possible corner
         And Using SIFT to encoding the feature
     """
-    def __init__(self, ksize=2, block_size=3, k=0.16, blur=cv2.GaussianBlur):
+    def __init__(self, ksize=3, block_size=3, k=0.16, blur=cv2.GaussianBlur):
         self.ksize = ksize
         self.block_size = block_size
         self.k = k
