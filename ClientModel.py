@@ -192,7 +192,7 @@ class HandWritingAuthInstance():
                 clct_idx += 1
         return (reg_ratio, reg_kp, reg_feat), True, 'Success'
 
-    def authenticate(self, img, model, poi_match_thresh=6):
+    def authenticate(self, img, model, min_poi=6):
         """
         Authentication process
         match the feature extracted from input image with the info in model.
@@ -249,7 +249,7 @@ class HandWritingAuthInstance():
 
         # validate the matched ratios and features and give the result
         ret = True
-        if len(kp_match) < poi_match_thresh:
+        if len(kp_match) < min_poi:
             return False, 'Mismatched'
         else:
             return True, 'Success'
@@ -264,10 +264,9 @@ if __name__ == '__main__':
 
     client = HandWritingAuthInstance(d, e, debug=True)
     reg_info, status, status_info = client.register(test.classes[0], min_poi=6)
-    reg_ratio, reg_kp, reg_feat = reg_info
-    ret = client.authenticate(test.classes[0][0], reg_info, poi_match_thresh=6)
+    ret = client.authenticate(test.classes[0][0], reg_info, min_poi=6)
     print(ret)
-    ret = client.authenticate(test.classes[1][0], reg_info, poi_match_thresh=6)
+    ret = client.authenticate(test.classes[1][0], reg_info, min_poi=6)
     print(ret)
-    ret = client.authenticate(test.classes[2][0], reg_info, poi_match_thresh=6)
+    ret = client.authenticate(test.classes[2][0], reg_info, min_poi=6)
     print(ret)
