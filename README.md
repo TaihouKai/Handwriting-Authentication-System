@@ -27,5 +27,6 @@ Wang Pengfei, Liu Fangrui, Zheng Qiushi, Google LLC
 #   MEMO
 
 * Add this function: relative position of the characters need to be checked as well!
+   * Comment this in the code. We won't demonstrate this function in the demo.
 
 * Add this function: return registered position to the user. It should be an optional function. 
