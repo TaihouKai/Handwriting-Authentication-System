@@ -264,9 +264,16 @@ if __name__ == '__main__':
 
     client = HandWritingAuthInstance(d, e, debug=True)
     reg_info, status, status_info = client.register(test.classes[0], min_poi=6)
-    ret = client.authenticate(test.classes[0][0], reg_info, min_poi=6)
+
+    #
+    serialized = TranslateLayer.TranslateLayer().serialize(reg_info)
+    deserialized = TranslateLayer.TranslateLayer().deserialize(serialized)
+    print(deserialized)
+    print((deserialized[0] == reg_info[0]).all())
+    print((deserialized[1][0] == reg_info[1][0]).all())
+    ret = client.authenticate(test.classes[0][0], deserialized, min_poi=6)
     print(ret)
-    ret = client.authenticate(test.classes[1][0], reg_info, min_poi=6)
+    ret = client.authenticate(test.classes[1][0], deserialized, min_poi=6)
     print(ret)
-    ret = client.authenticate(test.classes[2][0], reg_info, min_poi=6)
+    ret = client.authenticate(test.classes[2][0], deserialized, min_poi=6)
     print(ret)
