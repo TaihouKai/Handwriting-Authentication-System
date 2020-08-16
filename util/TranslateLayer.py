@@ -62,7 +62,7 @@ class TranslateLayer():
         elif type(data) == list or type(data) == tuple:
             ret, data = list(map(list, zip(*map(lambda x: self._recursive_ndarray(x), list(data)))))
             ret = reduce(lambda a, b: a and b, ret)
-            #'''
+            '''
             print("<<< ", data, "  ", ret)
             #print(reduce(lambda a, b: a and b, map(lambda x: self.__shape__(x)==self.__shape__(data[0]), data)))
             print(self._recursive_ndarray_stop_cond(data))

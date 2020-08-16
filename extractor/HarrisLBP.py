@@ -12,6 +12,7 @@ import cv2
 import sys
 import time
 import numpy as np
+from skimage.feature import local_binary_pattern
 sys.path.append('..')
 
 import util.cord_convert
@@ -34,9 +35,13 @@ class HarrisLBP():
         feat = None
         dst = cv2.cornerHarris(img, self.block_size, self.ksize, self.k)
         ret, dst = cv2.threshold(dst, 0.01*dst.max(), 255, 0)
-        kp = np.where(dst>0.01*dst.max())
-        kp = np.transpose(np.array(kp), [1,0])
-        return kp, feat
+        kp_where = np.where(dst>0.01*dst.max())
+        kp = np.transpose(np.array(kp_where), [1,0])
+        feat = local_binary_pattern(img, 24, 5)
+        feat = np.squeeze(feat[kp_where]).astype(np.int).tolist()
+        feat = list(map(lambda x: np.array(list(map(int, format(x, '024b')))), feat))
+        assert kp.shape[0] == len(feat)
+        return kp, np.array(feat)
     
     def visualize(self, img, kp, color=(0, 0, 255)):
         kp = kp.tolist()
@@ -69,9 +74,10 @@ if __name__ == '__main__':
     ret_img = []
     num = 2
     for i, idx in zip(test.classes[num], range(len(test.classes[num]))):
-        rimg = n.visualize(i).astype(np.uint8)
+        kps, feat = n.run(i)
+        rimg = n.visualize(i, kps).astype(np.uint8)
         cv2.imwrite('Harris_'+str(idx)+'.jpg', rimg)
-        # cv2.imshow('Harris_'+str(idx)+'.jpg', rimg)
+        cv2.imshow('Harris_'+str(idx)+'.jpg', rimg)
 
     cv2.waitKey()
     cv2.destroyAllWindows()
