@@ -1,1 +1,1 @@
-__all__ = ['cord_convert', 'CrossClassTest', 'nms', 'PointMatch', 'preprocessing']
+__all__ = ['cord_convert', 'CrossClassTest', 'nms', 'PointMatch', 'preprocessing', 'TranslateLayer']

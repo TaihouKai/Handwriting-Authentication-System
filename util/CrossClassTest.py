@@ -75,3 +75,10 @@ class CrossClassTest:
                                               name=name+'_'+str(idx)))
             ret_dict[name] = summ_fn(ret_dict[name])
         return ret_dict['same'], ret_dict['cross']
+
+if __name__ == '__main__':
+    test = CrossClassTest(base_dir='../samples/digit_data')
+    for n in test.classes:
+        cv2.imshow('test', n[0])
+        cv2.waitKey(0)
+    cv2.destroyAllWindows()
