@@ -3,4 +3,4 @@ opencv-contrib-python==3.4.2.16
 
 scikit-image
 matplotlib
-tensorflow==1.10.0
+tensorflow==2.3.1
