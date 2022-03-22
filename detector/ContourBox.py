@@ -33,7 +33,7 @@ class ContourBox():
         """ Input must be binary image (0 or 255) / gray image (0 ~ 255)
         """
         _, thresh = cv2.threshold(img, 127, 255, 0)
-        _, contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         bboxes = []
         for contour in contours:
             box = cv2.boundingRect(contour)
