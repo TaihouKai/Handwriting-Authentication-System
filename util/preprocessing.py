@@ -18,7 +18,7 @@ def binary(img, blur, kernel_size, threshold=0.7):
     else:
         gray = img
     #   Normalized to 0-1
-    gray = (gray - np.amin(gray)) / (np.amax(gray) - np.amin(gray))
+    gray = normlize(gray, mode='spatial')
     if blur is not None:
         blur_img = blur(gray, kernel_size, 0)
     else:
@@ -34,6 +34,24 @@ def size_align(img, height=32):
     ratio = img.shape[1] / float(img.shape[0])
     size = (int(ratio*height), int(height))
     return cv2.resize(img, size)
+
+def normlize(array, mode='dimensional', axis=None):
+    """
+    Normalize a N-D array
+    :param array:   numpy ndarray
+    :param mode:    'spatial' for 3D-array like images
+                    'dimensional' to normalize regarding to every dimensions
+    :return:
+    """
+    assert mode in ['spatial', 'dimensional']
+    if mode == 'spatial':
+        axis = (0, 1)
+    elif mode == 'dimensional':
+        if axis is not None:
+            axis = tuple(axis)
+    min = np.min(array, axis = axis)
+    max = np.max(array, axis = axis)
+    return (array - min) / float(max - min)
 
 
 
@@ -72,8 +90,8 @@ def mold_image(img, in_size, margin=0.7, padd_value=0, reversed=True):
         in_size     tuple
     """
     #   resize
-    h_scale = in_size[1] / img.shape[0]
-    w_scale = in_size[0] / img.shape[1]
+    h_scale = in_size[1] / float(img.shape[0])
+    w_scale = in_size[0] / float(img.shape[1])
     if h_scale < 1 or w_scale < 1:
         scale = max(h_scale, w_scale)
         size = np.array(img.shape) * scale

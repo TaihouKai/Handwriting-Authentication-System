@@ -60,7 +60,7 @@ class ContourBox():
 
 
 if __name__ == '__main__':
-    n = ContourBox(kernel_size=7)
+    n = ContourBox(kernel_size=7, bin_threshold=0.2)
     print('Loaded model')
     t = time.time()
     img = cv2.imread('../samples/digit_data/standard_b.png')[:,:,:3]
