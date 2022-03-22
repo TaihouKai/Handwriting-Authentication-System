@@ -41,7 +41,7 @@ class HandWritingAuthInstance():
         bimg = preprocessing.binary(simg,
                                     cv2.GaussianBlur,
                                     (7, 7),
-                                    threshold=0.9)
+                                    threshold=0.01)
         return simg, bimg
 
     def get_area(self, bboxes):

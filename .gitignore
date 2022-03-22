@@ -24,3 +24,6 @@ NIST_DATA/
 *.jpg
 *.zip
 *.csv
+
+outputs/
+outimages/
