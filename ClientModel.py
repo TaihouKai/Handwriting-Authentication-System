@@ -41,7 +41,7 @@ class HandWritingAuthInstance():
         bimg = preprocessing.binary(simg,
                                     cv2.GaussianBlur,
                                     (7, 7),
-                                    threshold=0.01)
+                                    threshold=0.1)
         return simg, bimg
 
     def get_area(self, bboxes):
@@ -55,10 +55,17 @@ class HandWritingAuthInstance():
         return np.squeeze(area, axis=-1)
 
     def extract(self, img):
-        simg, bimg = self.preproc(img)
+        simg, bimg = self.preproc(img, 256)
+
 
         #   Get the Bounding Boxes
         bboxes = self.detector.run(bimg, nms_thresh=0.1)
+        # bimg_ = np.stack([bimg] * 3, axis=-1).astype(np.uint8) 
+        # print(bboxes, bimg_.shape)
+        # for n in list(bboxes):
+        #     bimg_ = cv2.rectangle(bimg_, n[:2], n[2:], (0, 255, 0), 2)
+        # cv2.imshow('test', bimg_)
+        # cv2.waitKey(0)
         bindx = np.argsort(np.array(bboxes)[:, 0])
         bboxes = bboxes[bindx]
         areas = self.get_area(bboxes)
