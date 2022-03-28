@@ -8,7 +8,7 @@ from extractor import *
 from detector import *
 from ClientModel import HandWritingAuthInstance
 
-imgs = [cv2.imread(f)[:,:,:3] for f in glob(path.join('outimages', 'elenaP-*.png'))]
+imgs = [cv2.imread(f)[:,:,:3] for f in glob(path.join('outimages', 'YueYu-*.png'))]
 print(len(imgs))
 
 if __name__ == '__main__':
